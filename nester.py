@@ -2,14 +2,32 @@
 bot implementation.
 """
 import os
-import wolfram
+import random
 
 import ciscospark
+import wolfram
 
 # Sets config values from the config file
 ACCESS_TOKEN_SPARK = "Bearer " + os.environ['access_token_spark']
 WOLFRAMALPHA_CLIENT = os.environ['wolfram_client_id']
 MYSELF = os.environ['my_person_id']
+
+
+def random_dunno():
+    """
+    return random string
+    """
+    dunno_list = [
+        'Dunno.',
+        'It beats me.',
+        'Your guess is as good as mine.',
+        'Who knows?',
+        'I have no idea.',
+        'I don\'t have a clue.',
+        'I don\'t have the faintest idea'
+    ]
+
+    return random.choice(dunno_list)
 
 
 def handler(event, context):
@@ -52,22 +70,7 @@ def handler(event, context):
 
     result = wolfram.execute_spoken_query(WOLFRAMALPHA_CLIENT, user_query)
     if "did not understand" in result.lower() or "no spoken result" in result.lower():
-        result = 'Don\'t have a good answer for you. Try a different factual question.'
+        result = '{} Try a different factual question.'.format(random_dunno())
 
     ciscospark.post_message_rich(ACCESS_TOKEN_SPARK, room_id, result)
     return True
-
-
-def for_future():
-    """
-    something for the future
-    """
-    # Try a different error when answer is not found.
-    # I have no idea
-    # I haven't a clue
-    # I haven't the faintest idea
-    # Who knows?
-    # Your guess is as good as mine.
-    # It beats me
-    # Dunno.
-    return False
